@@ -79,8 +79,11 @@
     ]
   },
   "prettier": {
-    "semi": false,
-    "singleQuote": true
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "printWidth": 100
   },
   "commitlint": {
     "extends": [

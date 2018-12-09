@@ -8,39 +8,39 @@ import {
   MiddlewareAPI,
   Reducer,
   StoreCreator,
-  StoreEnhancer
-} from 'redux'
+  StoreEnhancer,
+} from 'redux';
 
-declare const self: DedicatedWorkerGlobalScope
+declare const self: DedicatedWorkerGlobalScope;
 
 /**
  * Meta flag for Return Actions.
  */
-export const META_FLAG = Symbol('@@redux-worker/returnAction')
+export const META_FLAG = Symbol('@@redux-worker/returnAction');
 
 /**
  * Checks if the action has a ReturnAction flag.
  */
-export const isReturnAction = (action: any): action is Action => META_FLAG in action
+export const isReturnAction = (action: any): action is Action => META_FLAG in action;
 
 /**
  * Mark any Action as a ReturnAction.
  */
 export const markReturnAction = (action: AnyAction) =>
-  Object.assign({}, action, { [META_FLAG]: true })
+  Object.assign({}, action, { [META_FLAG]: true });
 
 /**
  * Return Actions are sent to the client.
  */
 export const returnActionCreator = <T extends string>(type: T) => <P, M = undefined>(
   payload: P,
-  meta?: M
+  meta?: M,
 ) =>
   markReturnAction({
     type,
     payload,
-    meta
-  })
+    meta,
+  });
 
 /**
  * The `createWorkerStore` function is identical to the Redux `createStore`
@@ -76,17 +76,17 @@ export const returnActionCreator = <T extends string>(type: T) => <P, M = undefi
 export const createWorkerStore: StoreCreator = <S, A extends Action, Ext, StateExt>(
   reducer: Reducer<S, A>,
   preloadedStateOrEnhancer?: DeepPartial<S> | StoreEnhancer<Ext, StateExt>,
-  enhancer?: StoreEnhancer<Ext, StateExt>
+  enhancer?: StoreEnhancer<Ext, StateExt>,
 ) => {
   // Middleware to handle ReturnActions.
   const returnActionEnhancer = applyMiddleware(
     (_: MiddlewareAPI) => (next: (value: Action) => void) => (action: Action) => {
       if (isReturnAction(action)) {
-        self.postMessage(action)
+        self.postMessage(action);
       }
-      next(action)
-    }
-  )
+      next(action);
+    },
+  );
   // Setup Store.
   const store = (() => {
     if (typeof preloadedStateOrEnhancer === 'function') {
@@ -94,26 +94,26 @@ export const createWorkerStore: StoreCreator = <S, A extends Action, Ext, StateE
         reducer,
         compose(
           returnActionEnhancer,
-          preloadedStateOrEnhancer
-        )
-      )
+          preloadedStateOrEnhancer,
+        ),
+      );
     } else if (enhancer !== undefined) {
       return createStore(
         reducer,
         preloadedStateOrEnhancer || {},
         compose(
           returnActionEnhancer,
-          enhancer
-        )
-      )
+          enhancer,
+        ),
+      );
     } else if (typeof preloadedStateOrEnhancer === 'object') {
-      return createStore(reducer, preloadedStateOrEnhancer, returnActionEnhancer)
+      return createStore(reducer, preloadedStateOrEnhancer, returnActionEnhancer);
     } else {
-      return createStore(reducer, returnActionEnhancer)
+      return createStore(reducer, returnActionEnhancer);
     }
-  })()
+  })();
   // Watch for incomming Actions and dispatch.
-  self.onmessage = msg => store.dispatch(msg.data)
+  self.onmessage = msg => store.dispatch(msg.data);
 
-  return store
-}
+  return store;
+};

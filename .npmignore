@@ -1,0 +1,15 @@
+*.log
+.*
+
+compiled/
+coverage/
+docs/
+node_modules/
+src/
+test/
+tools/
+
+rollup.config.ts
+tsconfig.json
+tslint.json
+yarn.lock

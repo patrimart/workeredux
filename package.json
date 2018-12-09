@@ -2,17 +2,23 @@
   "name": "workeredux",
   "version": "1.0.0",
   "description": "",
-  "keywords": [],
+  "keywords": [
+    "middleware",
+    "reducers",
+    "react",
+    "redux",
+    "worker"
+  ],
   "main": "dist/workeredux.umd.js",
   "module": "dist/workeredux.es5.js",
   "typings": "dist/types/workeredux.d.ts",
   "files": [
     "dist"
   ],
-  "author": "Patrick Martin <bypatrickmartin@gmail.com>",
+  "author": "Patrick Martin",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/patrimart/workeredux"
   },
   "license": "MIT",
   "engines": {

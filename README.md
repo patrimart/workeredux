@@ -1,5 +1,8 @@
 # workeredux
 
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/facebook/react/blob/master/LICENSE)
+[![npm version](https://img.shields.io/npm/v/workeredux.svg?style=flat)](https://www.npmjs.com/package/workeredux)
+
 ## Worker Redux — Run `Redux` reducers and middleware in a Web Worker.
 
 This library makes it trivial to process expensive calculations in a Web Worker
@@ -7,7 +10,7 @@ while using the `Redux` pattern you know and love.
 
 If you know `Redux`, you already know how to use `workeredux`.
 
-Rejoice! This library is built with `TypeScript`.
+This library is built with `TypeScript`.
 
 ---
 
@@ -117,7 +120,7 @@ createWorkerStore(
 sagaMiddleware.run(saga);
 ```
 
-### `store.ts`
+### `initStore.ts`
 
 Example of Redux store setup.
 
@@ -146,6 +149,95 @@ export function initStore() {
   sagaMiddleware.run(sagas);
   return store;
 }
+```
+
+## Library Interface
+
+### Client
+
+```ts
+/**
+ * Error Action type.
+ */
+const REDUX_WORKER_ERROR = "@@redux-worker/error-action";`
+```
+
+```ts
+/**
+ * Type guard checks if the Action has a Worker Action flag.
+ */
+const isWorkerAction: <T extends string>(action: AnyAction) => action is Action<T>;
+```
+
+```ts
+/**
+ * Type guard checks for Worker Error Action.
+ */
+const isErrorAction: (action: AnyAction) => action is Action<'@@redux-worker/error-action'>;
+```
+
+```ts
+/**
+ * Mark any Action as a WorkerAction.
+ */
+const markWorkerAction: (action: AnyAction) => AnyAction;
+```
+
+```ts
+/**
+ * Worker Actions are sent to the web worker.
+ */
+const workerActionCreator: <T extends string>(
+  type: T,
+) => <P, M = undefined>(payload: P, meta?: M) => AnyAction;
+```
+
+```ts
+/**
+ * Function to create Redux Worker middleware.
+ */
+function createReduxWorkerMiddleware(
+  worker: Worker,
+  postAll?: boolean,
+): {
+  reduxWorkerMiddleware: (
+    api: MiddlewareAPI<Dispatch<AnyAction>, any>,
+  ) => (next: (value: Action<any>) => void) => (action: Action<any>) => void;
+  terminate: () => void;
+};
+```
+
+### Worker
+
+```ts
+/**
+ * Type guard checks if the action has a ReturnAction flag.
+ */
+export declare const isReturnAction: <T extends string>(action: any) => action is Action<T>;
+```
+
+```ts
+/**
+ * Mark any Action as a ReturnAction.
+ */
+export declare const markReturnAction: (action: AnyAction) => AnyAction;
+```
+
+```ts
+/**
+ * Return Actions are sent to the client.
+ */
+export declare const returnActionCreator: <T extends string>(
+  type: T,
+) => <P, M = undefined>(payload: P, meta?: M) => AnyAction;
+```
+
+```ts
+/**
+ * The createWorkerStore function is identical to the Redux createStore functon.
+ * Except that it automatically includes the middleware to post ReturnActions to the main thread.
+ */
+const createWorkerStore: StoreCreator;
 ```
 
 ## Webpack

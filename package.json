@@ -1,13 +1,14 @@
 {
   "name": "workeredux",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "keywords": [
     "middleware",
     "reducers",
     "react",
     "redux",
-    "worker"
+    "worker",
+    "web worker"
   ],
   "main": "dist/workeredux.umd.js",
   "module": "dist/workeredux.es5.js",

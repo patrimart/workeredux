@@ -1,39 +1,5 @@
-import { Action, AnyAction, MiddlewareAPI } from 'redux';
-
-export const REDUX_WORKER_ERROR = '@@redux-worker/error-action';
-const META_FLAG = Symbol('@@redux-worker/action');
-
-/**
- * Checks if the Action has a Worker Action flag.
- */
-export const isWorkerAction = (action: any): action is Action => META_FLAG in action;
-
-/**
- * Mark any Action as a WorkerAction.
- */
-export const markWorkerAction = (action: AnyAction) =>
-  Object.assign({}, action, { [META_FLAG]: true });
-
-/**
- * Worker Actions are sent to the web worker.
- */
-export const workerActionCreator = <T extends string>(type: T) => <P, M = undefined>(
-  payload: P,
-  meta?: M,
-) =>
-  markWorkerAction({
-    type,
-    payload,
-    meta,
-  });
-
-/**
- * ErrorAction dispatched when Worker emits an error message.
- */
-const errorAction = (payload: ErrorEvent) => ({
-  type: REDUX_WORKER_ERROR,
-  payload,
-});
+import { Action, MiddlewareAPI } from 'redux';
+import { errorAction, isWorkerAction } from './actions';
 
 /**
  * Function to create Redux Worker middleware.

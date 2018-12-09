@@ -1,6 +1,5 @@
 import {
   Action,
-  AnyAction,
   applyMiddleware,
   compose,
   createStore,
@@ -10,41 +9,13 @@ import {
   StoreCreator,
   StoreEnhancer,
 } from 'redux';
+import { isReturnAction } from './actions';
 
 declare const self: DedicatedWorkerGlobalScope;
 
 /**
- * Meta flag for Return Actions.
- */
-export const META_FLAG = Symbol('@@redux-worker/returnAction');
-
-/**
- * Checks if the action has a ReturnAction flag.
- */
-export const isReturnAction = (action: any): action is Action => META_FLAG in action;
-
-/**
- * Mark any Action as a ReturnAction.
- */
-export const markReturnAction = (action: AnyAction) =>
-  Object.assign({}, action, { [META_FLAG]: true });
-
-/**
- * Return Actions are sent to the client.
- */
-export const returnActionCreator = <T extends string>(type: T) => <P, M = undefined>(
-  payload: P,
-  meta?: M,
-) =>
-  markReturnAction({
-    type,
-    payload,
-    meta,
-  });
-
-/**
  * The `createWorkerStore` function is identical to the Redux `createStore`
- * functon. Except that is automatically includes the middleware to post
+ * functon. Except that it automatically includes the middleware to post
  * ReturnActions to the main thread.
  *
  * Creates a Redux store that holds the state tree.

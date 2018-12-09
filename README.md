@@ -180,7 +180,7 @@ const isErrorAction: (action: AnyAction) => action is Action<'@@redux-worker/err
 /**
  * Mark any Action as a WorkerAction.
  */
-const markWorkerAction: (action: AnyAction) => AnyAction;
+const markWorkerAction: <T extends string>(action: Action<T>) => Action<T>;
 ```
 
 ```ts
@@ -220,7 +220,7 @@ export declare const isReturnAction: <T extends string>(action: any) => action i
 /**
  * Mark any Action as a ReturnAction.
  */
-export declare const markReturnAction: (action: AnyAction) => AnyAction;
+export declare const markReturnAction: <T extends string>(action: Action<T>) => Action<T>;
 ```
 
 ```ts

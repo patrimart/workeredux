@@ -1,4 +1,4 @@
-import { Action } from 'redux';
+import { Action, AnyAction } from 'redux';
 
 /**
  * Meta flag for Return Actions.
@@ -8,13 +8,13 @@ export const META_FLAG = Symbol('@@redux-worker/returnAction');
 /**
  * Type guard checks if the action has a ReturnAction flag.
  */
-export const isReturnAction = <T extends string>(action: any): action is Action<T> =>
+export const isReturnAction = <T extends string>(action: any): action is AnyAction & Action<T> =>
   META_FLAG in action;
 
 /**
  * Mark any Action as a ReturnAction.
  */
-export const markReturnAction = <T extends string>(action: Action<T>) =>
+export const markReturnAction = <T extends string>(action: AnyAction & Action<T>) =>
   Object.assign({}, action, { [META_FLAG]: true });
 
 /**
@@ -28,4 +28,4 @@ export const returnActionCreator = <T extends string>(type: T) => <P, M = undefi
     type,
     payload,
     meta,
-  } as Action<T>);
+  });

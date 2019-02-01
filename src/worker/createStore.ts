@@ -64,8 +64,8 @@ export const createWorkerStore: StoreCreator = <S, A extends Action, Ext, StateE
       return createStore(
         reducer,
         compose(
-          returnActionEnhancer,
           preloadedStateOrEnhancer,
+          returnActionEnhancer,
         ),
       );
     } else if (enhancer !== undefined) {
@@ -73,8 +73,8 @@ export const createWorkerStore: StoreCreator = <S, A extends Action, Ext, StateE
         reducer,
         preloadedStateOrEnhancer || {},
         compose(
-          returnActionEnhancer,
           enhancer,
+          returnActionEnhancer,
         ),
       );
     } else if (typeof preloadedStateOrEnhancer === 'object') {

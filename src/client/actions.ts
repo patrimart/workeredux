@@ -29,7 +29,7 @@ export const markWorkerAction = <T extends string>(action: AnyAction & Action<T>
 /**
  * Worker Actions are sent to the web worker.
  */
-export const workerActionCreator = <T extends string>(type: T) => <P, M = undefined>(
+export const workerActionCreator = <P, T extends string = string, M = undefined>(type: T) => (
   payload: P,
   meta?: M,
 ) =>

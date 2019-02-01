@@ -20,7 +20,7 @@ export const markReturnAction = <T extends string>(action: AnyAction & Action<T>
 /**
  * Return Actions are sent to the client.
  */
-export const returnActionCreator = <T extends string>(type: T) => <P, M = undefined>(
+export const returnActionCreator = <P, T extends string = string, M = undefined>(type: T) => (
   payload: P,
   meta?: M,
 ) =>

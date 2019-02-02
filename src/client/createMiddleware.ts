@@ -1,5 +1,6 @@
 import { Action, MiddlewareAPI } from 'redux';
 import { errorAction, isWorkerAction } from './actions';
+import { TRANSFERABLE_FLAG, hasTransferables } from '../transferables';
 
 /**
  * Function to create Redux Worker middleware.
@@ -19,7 +20,11 @@ export function createReduxWorkerMiddleware(worker: Worker, postAll = false) {
     return (action: Action) => {
       if (isActive && (postAll || isWorkerAction(action))) {
         try {
-          worker.postMessage(action);
+          if (hasTransferables(action)) {
+            worker.postMessage(action, action[TRANSFERABLE_FLAG]);
+          } else {
+            worker.postMessage(action);
+          }
         } catch (err) {
           console.error('Failed to postMessage to ReduxWorker.', err);
         }

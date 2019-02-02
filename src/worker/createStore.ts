@@ -10,6 +10,7 @@ import {
   StoreEnhancer,
 } from 'redux';
 import { isReturnAction } from './actions';
+import { TRANSFERABLE_FLAG, hasTransferables } from '../transferables';
 
 declare const self: DedicatedWorkerGlobalScope;
 
@@ -53,7 +54,11 @@ export const createWorkerStore: StoreCreator = <S, A extends Action, Ext, StateE
   const returnActionEnhancer = applyMiddleware(
     (_: MiddlewareAPI) => (next: (value: Action) => void) => (action: Action) => {
       if (isReturnAction(action)) {
-        self.postMessage(action);
+        if (hasTransferables(action)) {
+          self.postMessage(action, action[TRANSFERABLE_FLAG]);
+        } else {
+          self.postMessage(action);
+        }
       }
       next(action);
     },

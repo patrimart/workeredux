@@ -5,7 +5,7 @@ import { Action, AnyAction } from 'redux';
  */
 export const REDUX_WORKER_ERROR = '@@redux-worker/error-action';
 
-const META_FLAG = Symbol('@@redux-worker/action');
+const META_FLAG = Symbol('@@workeredux/workerAction');
 
 /**
  * Type guard checks if the Action has a Worker Action flag.

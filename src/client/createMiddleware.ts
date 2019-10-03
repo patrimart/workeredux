@@ -1,6 +1,6 @@
 import { Action, MiddlewareAPI } from 'redux';
 import { errorAction, isWorkerAction } from './actions';
-import { TRANSFERABLE_FLAG, hasTransferables } from '../transferables';
+import { actionBuffer } from '../actionBuffer';
 
 /**
  * Function to create Redux Worker middleware.
@@ -13,21 +13,16 @@ import { TRANSFERABLE_FLAG, hasTransferables } from '../transferables';
  */
 export function createReduxWorkerMiddleware(worker: Worker, postAll = false) {
   let isActive = true;
+  const [dispatch, closeArrayBuffer] = actionBuffer(worker);
 
   const reduxWorkerMiddleware = (api: MiddlewareAPI) => (next: (value: Action) => void) => {
-    worker.addEventListener('message', evt => api.dispatch(evt.data));
+    worker.addEventListener('message', evt =>
+      Array.isArray(evt.data) ? evt.data.map(d => api.dispatch(d)) : api.dispatch(evt.data),
+    );
     worker.addEventListener('error', evt => api.dispatch(errorAction(evt)));
     return (action: Action) => {
       if (isActive && (postAll || isWorkerAction(action))) {
-        try {
-          if (hasTransferables(action)) {
-            worker.postMessage(action, action[TRANSFERABLE_FLAG]);
-          } else {
-            worker.postMessage(action);
-          }
-        } catch (err) {
-          console.error('Failed to postMessage to ReduxWorker.', err);
-        }
+        dispatch(action);
       }
       next(action);
     };
@@ -35,6 +30,7 @@ export function createReduxWorkerMiddleware(worker: Worker, postAll = false) {
 
   const terminate = () => {
     isActive = false;
+    closeArrayBuffer();
     worker.terminate();
   };
 

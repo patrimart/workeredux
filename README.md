@@ -36,7 +36,8 @@ $ yarn add -D worker-loader
 
 Actions pass through the Redux reducers and middlewares on the main thread as expected.
 
-The `reduxWorkerMiddleware` will send Actions marked as **WorkerActions** to the Worker.
+The `reduxWorkerMiddleware` will send Actions marked as **WorkerActions** to the Worker. If possible,
+actions will be sent in batches every 33ms.
 
 - Create a **WorkerAction** with `workerActionCreator`.
 - Mark an Action as a **WorkerAction** with `markWorkerAction`.

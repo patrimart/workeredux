@@ -10,7 +10,7 @@ import {
   StoreEnhancer,
 } from 'redux';
 import { isReturnAction } from './actions';
-import { TRANSFERABLE_FLAG, hasTransferables } from '../transferables';
+import { actionBuffer } from '../actionBuffer';
 
 declare const self: DedicatedWorkerGlobalScope;
 
@@ -50,15 +50,12 @@ export const createWorkerStore: StoreCreator = <S, A extends Action, Ext, StateE
   preloadedStateOrEnhancer?: DeepPartial<S> | StoreEnhancer<Ext, StateExt>,
   enhancer?: StoreEnhancer<Ext, StateExt>,
 ) => {
+  const [dispatch] = actionBuffer(self);
   // Middleware to handle ReturnActions.
   const returnActionEnhancer = applyMiddleware(
     (_: MiddlewareAPI) => (next: (value: Action) => void) => (action: Action) => {
       if (isReturnAction(action)) {
-        if (hasTransferables(action)) {
-          self.postMessage(action, action[TRANSFERABLE_FLAG]);
-        } else {
-          self.postMessage(action);
-        }
+        dispatch(action);
       }
       next(action);
     },
@@ -89,7 +86,8 @@ export const createWorkerStore: StoreCreator = <S, A extends Action, Ext, StateE
     }
   })();
   // Watch for incomming Actions and dispatch.
-  self.onmessage = msg => store.dispatch(msg.data);
+  self.onmessage = msg =>
+    Array.isArray(msg.data) ? msg.data.map(data => store.dispatch(data)) : store.dispatch(msg.data);
 
   return store;
 };

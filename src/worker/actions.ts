@@ -8,13 +8,14 @@ export const META_FLAG = Symbol('@@workeredux/returnAction');
 /**
  * Type guard checks if the action has a ReturnAction flag.
  */
-export const isReturnAction = <T extends string>(action: any): action is AnyAction & Action<T> =>
-  META_FLAG in action;
+export const isReturnAction = <T extends string, A extends AnyAction & Action<T>>(
+  action: A,
+): action is A => META_FLAG in action;
 
 /**
  * Mark any Action as a ReturnAction, returning a new Action.
  */
-export const markReturnAction = <T extends string>(action: AnyAction & Action<T>) =>
+export const markReturnAction = <T extends string, A extends AnyAction & Action<T>>(action: A): A =>
   Object.assign({}, action, { [META_FLAG]: true });
 
 /**
